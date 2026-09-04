@@ -1,1 +1,1 @@
-https://github.com/kaminari19/FlyRank-Starter/blob/main/work/notebooks/capstone.ipynb
+https://kaminari19.github.io/FlyRank-Starter/
