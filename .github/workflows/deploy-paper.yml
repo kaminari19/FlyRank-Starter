@@ -1,0 +1,55 @@
+name: Deploy capstone paper
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install nbconvert
+        run: |
+          python -m pip install --upgrade pip
+          pip install notebook nbconvert
+
+      - name: Convert capstone notebook to HTML
+        run: |
+          mkdir -p site
+          jupyter nbconvert \
+            --to html \
+            --output index.html \
+            --output-dir site \
+            work/notebooks/capstone.ipynb
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
